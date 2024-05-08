@@ -7,7 +7,7 @@ const {
   DB_USER, DB_PASSWORD, DB_HOST,
 } = process.env;
 
-const sequelize = new Sequelize(`postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/countries`, {
+const sequelize = new Sequelize(`postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/legalTech`, {
   logging: false, 
   native: false, 
 });
@@ -27,15 +27,28 @@ let entries = Object.entries(sequelize.models);
 let capsEntries = entries.map((entry) => [entry[0][0].toUpperCase() + entry[0].slice(1), entry[1]]);
 sequelize.models = Object.fromEntries(capsEntries);
 
-const { Caso, Cotizacion, Contrato, TipoDeCaso, DocumentoTemplate, DocumentoLegal } = sequelize.models;
+const { Caso,
+        Cotizacion, 
+        Contrato, 
+        TipoDeCaso, 
+        DocumentoTemplate, 
+        DocumentoLegal, 
+        TipoNotificacion, 
+        DocumentoLegalTipoNotificacion 
+      } = sequelize.models;
 
 TipoDeCaso.belongsToMany(DocumentoTemplate, { through: 'TipoDeCasoDocumentoTemplate' });
 DocumentoTemplate.belongsToMany(TipoDeCaso, { through: 'TipoDeCasoDocumentoTemplate' });
+DocumentoLegal.belongsToMany(TipoNotificacion, {through: DocumentoLegalTipoNotificacion})
+TipoNotificacion.belongsToMany(DocumentoLegal,{through: DocumentoLegalTipoNotificacion})
 DocumentoTemplate.belongsTo(DocumentoLegal);
+DocumentoLegal.belongsTo(DocumentoTemplate)
+DocumentoLegal.belongsTo(Caso)
+
 Caso.hasOne(Cotizacion);
 Cotizacion.belongsTo(Caso);
-Cotizacion.hasOne(Contrato)
-Contrato.belongsTo(Cotizacion)
+Cotizacion.hasOne(Contrato);
+Contrato.belongsTo(Cotizacion);
 
 module.exports = {
   ...sequelize.models,
