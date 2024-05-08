@@ -27,10 +27,15 @@ let entries = Object.entries(sequelize.models);
 let capsEntries = entries.map((entry) => [entry[0][0].toUpperCase() + entry[0].slice(1), entry[1]]);
 sequelize.models = Object.fromEntries(capsEntries);
 
-const { TipoDeCaso, DocumentoTemplate } = sequelize.models;
+const { Caso, Cotizacion, Contrato, TipoDeCaso, DocumentoTemplate, DocumentoLegal } = sequelize.models;
 
 TipoDeCaso.belongsToMany(DocumentoTemplate, { through: 'TipoDeCasoDocumentoTemplate' });
 DocumentoTemplate.belongsToMany(TipoDeCaso, { through: 'TipoDeCasoDocumentoTemplate' });
+DocumentoTemplate.belongsTo(DocumentoLegal);
+Caso.hasOne(Cotizacion);
+Cotizacion.belongsTo(Caso);
+Cotizacion.hasOne(Contrato)
+Contrato.belongsTo(Cotizacion)
 
 module.exports = {
   ...sequelize.models,

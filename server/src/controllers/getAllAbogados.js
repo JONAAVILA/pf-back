@@ -1,7 +1,7 @@
 const { Abogado } = require('../db')
 
 const getAllAbogados = async ()=>{
-    const getAllAbogadosBd = await Activity.findAll();
+    const getAllAbogadosBd = await Abogado.findAll();
 
     return getAllAbogadosBd;
 };
