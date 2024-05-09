@@ -28,7 +28,10 @@ let capsEntries = entries.map((entry) => [entry[0][0].toUpperCase() + entry[0].s
 sequelize.models = Object.fromEntries(capsEntries);
 
 const { Caso,
-        Cotizacion, 
+        Cotizacion,
+        Consulta,
+        Abogado,
+        Cliente, 
         Contrato, 
         TipoDeCaso, 
         DocumentoTemplate, 
@@ -37,18 +40,23 @@ const { Caso,
         DocumentoLegalTipoNotificacion 
       } = sequelize.models;
 
-TipoDeCaso.belongsToMany(DocumentoTemplate, { through: 'TipoDeCasoDocumentoTemplate' });
-DocumentoTemplate.belongsToMany(TipoDeCaso, { through: 'TipoDeCasoDocumentoTemplate' });
+TipoDeCaso.belongsToMany(DocumentoTemplate, { through: 'TipoDeCasoDocumentoTemplate' })
+DocumentoTemplate.belongsToMany(TipoDeCaso, { through: 'TipoDeCasoDocumentoTemplate' })
 DocumentoLegal.belongsToMany(TipoNotificacion, {through: DocumentoLegalTipoNotificacion})
 TipoNotificacion.belongsToMany(DocumentoLegal,{through: DocumentoLegalTipoNotificacion})
-DocumentoTemplate.belongsTo(DocumentoLegal);
+
 DocumentoLegal.belongsTo(DocumentoTemplate)
 DocumentoLegal.belongsTo(Caso)
 
-Caso.hasOne(Cotizacion);
-Cotizacion.belongsTo(Caso);
-Cotizacion.hasOne(Contrato);
-Contrato.belongsTo(Cotizacion);
+Caso.belongsTo(Abogado)
+Caso.belongsTo(TipoDeCaso)
+Caso.belongsTo(Cliente)
+Caso.hasOne(Cotizacion)
+
+Cotizacion.belongsTo(Caso)
+Cotizacion.hasOne(Contrato)
+Contrato.belongsTo(Cotizacion)
+Consulta.belongsTo(Cliente)
 
 module.exports = {
   ...sequelize.models,
